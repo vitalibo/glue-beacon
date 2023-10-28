@@ -1,0 +1,10 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: |
+  This template creates resources for monitoring AWS Glue Jobs completeness, failures, and duration.
+Parameters:
+  Name:
+    Type: String
+    Description: Name prefix for all resources
+Resources:
+  Lambda:
+    Type: AWS::Lambda::Function
