@@ -3,7 +3,7 @@ from datetime import datetime
 from unittest import mock
 
 
-@mock.patch("boto3.session.Session")
+@mock.patch('boto3.session.Session')
 def test_handler(mock_session_class):
     mock_session = mock.Mock()
     mock_session_class.return_value = mock_session
