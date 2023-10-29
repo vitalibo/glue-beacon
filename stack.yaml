@@ -8,3 +8,79 @@ Parameters:
 Resources:
   Lambda:
     Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref Name
+      Description: Publishes CloudWatch metrics based on AWS Glue Jobs state changes
+      Handler: lambda.handler
+      MemorySize: 128
+      Role: !GetAtt Role.Arn
+      Runtime: python3.11
+      Timeout: 30
+      Environment:
+        Variables:
+          LOG_LEVEL: INFO
+      Code:
+        ZipFile: |
+          ...
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref Name
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+            Service:
+              - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: Runtime
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: !GetAtt LogGroup.Arn
+              - Effect: Allow
+                Action:
+                  - "glue:GetJobRun"
+                  - "glue:GetJobRuns"
+                  - "glue:GetTags"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "cloudwatch:PutMetricData"
+                Resource: "*"
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${Name}"
+      RetentionInDays: 30
+  Rule:
+    Type: AWS::Events::Rule
+    Properties:
+      State: ENABLED
+      EventPattern:
+        source:
+          - "aws.glue"
+        detail-type:
+          - "Glue Job State Change"
+      Name: !Ref Name
+      Targets:
+        - Id: InvokeLambda
+          Arn: !GetAtt Lambda.Arn
+  Permission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt Lambda.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt Rule.Arn
+Outputs:
+  LambdaArn:
+    Description: ARN of the Lambda function
+    Value: !GetAtt Lambda.Arn
