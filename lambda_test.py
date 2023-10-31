@@ -13,7 +13,7 @@ def test_handler(mock_session_class):
     mock_cloudwatch = mock.Mock()
     mock_session.client.side_effect = [mock_glue, mock_cloudwatch]
 
-    with mock.patch.dict('os.environ', {'TAGS': 'Environment'}):
+    with mock.patch.dict('os.environ', {'DIMENSIONS': 'Environment'}):
         aws_lambda = importlib.import_module('lambda')
         aws_lambda.handler(create_event(), mock.Mock())
 

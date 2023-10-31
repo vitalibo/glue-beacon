@@ -5,6 +5,10 @@ Parameters:
   Name:
     Type: String
     Description: Name prefix for all resources
+  Dimensions:
+    Type: String
+    Description: List of dimensions to be added to the metrics.
+    Default: ''
 Resources:
   Lambda:
     Type: AWS::Lambda::Function
@@ -19,6 +23,7 @@ Resources:
       Environment:
         Variables:
           LOG_LEVEL: INFO
+          DIMENSIONS: !Ref Dimensions
       Code:
         ZipFile: |
           ...

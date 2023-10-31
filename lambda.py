@@ -13,9 +13,9 @@ session = boto3.session.Session()
 glue = session.client('glue')
 cloudwatch = session.client('cloudwatch')
 
-tags = []
-if os.environ.get('TAGS'):
-    tags = os.environ['TAGS'].split(',')
+DIMENSIONS = []
+if os.environ.get('DIMENSIONS', '') != '':
+    DIMENSIONS = os.environ['DIMENSIONS'].split(',')
 
 
 def handler(event, context):  # pylint: disable=unused-argument
@@ -34,10 +34,10 @@ def handler(event, context):  # pylint: disable=unused-argument
         },
         *[
             {
-                'Name': tag,
-                'Value': job_run['Tags'].get(tag, 'Unknown')
+                'Name': dimension,
+                'Value': job_run['Tags'].get(dimension, 'Unknown')
             }
-            for tag in tags
+            for dimension in DIMENSIONS
         ]
     ]
 
