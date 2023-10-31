@@ -1,0 +1,47 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: poetry
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Check code formatting
+        run: poetry run poe style
+
+      - name: Run tests
+        run: poetry run poe test
+
+      - name: Compile AWS CloudFormation template
+        run: poetry run poe compile
+
+      - name: Publish AWS CloudFormation template
+        run: aws s3 cp stack.output.yaml s3://vitalibo-public-us-east-1/glue-beacon/latest/stack.template
