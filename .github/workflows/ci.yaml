@@ -44,4 +44,6 @@ jobs:
         run: poetry run poe compile
 
       - name: Publish AWS CloudFormation template
-        run: aws s3 cp stack.output.yaml s3://vitalibo-public-us-east-1/glue-beacon/latest/stack.template
+        run: |
+          aws s3 cp stack.output.yaml s3://vitalibo-public-us-east-1/glue-beacon/${{ github.run_number }}/stack.template
+          aws s3 cp stack.output.yaml s3://vitalibo-public-us-east-1/glue-beacon/latest/stack.template

@@ -14,14 +14,11 @@ Deploy the CloudFormation stack using the button below.
 
 Provide the following parameters:
 
-- **Name** - Name prefix for all resources created by the stack. This parameter is required.
 - **Dimensions** - Comma separated list of dimensions to be added to the metrics. Values for each dimension will be
   extracted from the job tags. If the job does not have a tag with the specified name, the dimension will have `Unknown`
   value. This parameter is optional.
 
 Once the stack is deployed, you will have a new CloudWatch namespace `Glue` with the following metrics:
-
-#### Invocation metrics
 
 Invocation metrics are binary indicators of the outcome invocation.
 
@@ -31,8 +28,6 @@ Invocation metrics are binary indicators of the outcome invocation.
   To calculate the error rate, divide the value of **Failed** by sum values **Succeeded** and **Failed**.
 - **Timeout** - The number of job executions that result in a timeout.
 - **Stopped** - The number of job executions that was manually stopped.
-
-#### Performance metrics
 
 Performance metrics provide performance details about a single run.
 

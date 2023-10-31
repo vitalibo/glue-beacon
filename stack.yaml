@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: |
   This template creates resources for monitoring AWS Glue Jobs completeness, failures, and duration.
 Parameters:
-  Name:
-    Type: String
-    Description: Name prefix for all resources
   Dimensions:
     Type: String
     Description: List of dimensions to be added to the metrics.
@@ -13,7 +10,7 @@ Resources:
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Ref Name
+      FunctionName: !Ref AWS::StackName
       Description: Publishes CloudWatch metrics based on AWS Glue Jobs state changes
       Handler: index.handler
       MemorySize: 128
@@ -30,7 +27,7 @@ Resources:
   Role:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref Name
+      RoleName: !Ref AWS::StackName
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -63,7 +60,7 @@ Resources:
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${Name}"
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}"
       RetentionInDays: 30
   Rule:
     Type: AWS::Events::Rule
@@ -74,7 +71,7 @@ Resources:
           - "aws.glue"
         detail-type:
           - "Glue Job State Change"
-      Name: !Ref Name
+      Name: !Ref AWS::StackName
       Targets:
         - Id: InvokeLambda
           Arn: !GetAtt Lambda.Arn
