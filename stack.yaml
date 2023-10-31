@@ -15,7 +15,7 @@ Resources:
     Properties:
       FunctionName: !Ref Name
       Description: Publishes CloudWatch metrics based on AWS Glue Jobs state changes
-      Handler: lambda.handler
+      Handler: index.handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.11
